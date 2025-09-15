@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E64F8E74-8931-41F2-9C82-B69843C99CE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.API", "src\Comments.API\Comments.API.csproj", "{5A67766C-F9C7-4273-8C69-1ABE28E7CC83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.Core", "src\Comments.Core\Comments.Core.csproj", "{937144E8-EDA4-4B87-8048-594604D63D4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.Data", "src\Comments.Data\Comments.Data.csproj", "{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5A67766C-F9C7-4273-8C69-1ABE28E7CC83} = {E64F8E74-8931-41F2-9C82-B69843C99CE1}
+		{937144E8-EDA4-4B87-8048-594604D63D4B} = {E64F8E74-8931-41F2-9C82-B69843C99CE1}
+		{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361} = {E64F8E74-8931-41F2-9C82-B69843C99CE1}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A67766C-F9C7-4273-8C69-1ABE28E7CC83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A67766C-F9C7-4273-8C69-1ABE28E7CC83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A67766C-F9C7-4273-8C69-1ABE28E7CC83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A67766C-F9C7-4273-8C69-1ABE28E7CC83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{937144E8-EDA4-4B87-8048-594604D63D4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{937144E8-EDA4-4B87-8048-594604D63D4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{937144E8-EDA4-4B87-8048-594604D63D4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{937144E8-EDA4-4B87-8048-594604D63D4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
