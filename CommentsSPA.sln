@@ -1,12 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E64F8E74-8931-41F2-9C82-B69843C99CE1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{E64F8E74-8931-41F2-9C82-B69843C99CE1}"
+	ProjectSection(SolutionItems) = preProject
+		backend\Dockerfile = backend\Dockerfile
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.API", "src\Comments.API\Comments.API.csproj", "{5A67766C-F9C7-4273-8C69-1ABE28E7CC83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.API", "backend\Comments.API\Comments.API.csproj", "{5A67766C-F9C7-4273-8C69-1ABE28E7CC83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.Core", "src\Comments.Core\Comments.Core.csproj", "{937144E8-EDA4-4B87-8048-594604D63D4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.Core", "backend\Comments.Core\Comments.Core.csproj", "{937144E8-EDA4-4B87-8048-594604D63D4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.Data", "src\Comments.Data\Comments.Data.csproj", "{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comments.Data", "backend\Comments.Data\Comments.Data.csproj", "{7617DE4C-7AAE-4B6D-BC91-C9E2E0AEF361}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{96ECD7F2-CFBA-41E5-8FB8-BA3CF4249DFE}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		.env = .env
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
