@@ -4,19 +4,20 @@ using Comments.Core.Entities;
 using Comments.Data.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Comments.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CommentsController(CommentsContext context, IMapper mapper) : ControllerBase
+public class CommentsController(CommentsContext context, IMapper mapper, IMemoryCache memoryCache) : ControllerBase
 {
     private const int PAGE_SIZE = 25;
     
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateCommentRequest request, CancellationToken ct)
     {
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid || !ValidateCaptcha(request))
             return ValidationProblem(ModelState);
 
         Comment comment;
@@ -106,5 +107,29 @@ public class CommentsController(CommentsContext context, IMapper mapper) : Contr
             _ => query.OrderByDescending(c => c.CreatedAt)
         };
         return query;
+    }
+    
+    private bool ValidateCaptcha(CreateCommentRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.CaptchaId) || string.IsNullOrWhiteSpace(request.CaptchaCode))
+        {
+            ModelState.AddModelError(nameof(request.CaptchaId), "CaptchaId and CaptchaCode are required.");
+            return false;
+        }
+
+        if (!memoryCache.TryGetValue<string>(request.CaptchaId, out var expectedCode))
+        {
+            ModelState.AddModelError(nameof(request.CaptchaId), "CAPTCHA expired or not found.");
+            return false;
+        }
+
+        if (!string.Equals(expectedCode, request.CaptchaCode.Trim(), StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(nameof(request.CaptchaCode), "Invalid CAPTCHA code.");
+            return false;
+        }
+
+        memoryCache.Remove(request.CaptchaId);
+        return true;
     }
 }

@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace Comments.API.Validators;
 
-public sealed class CommentCreateDtoValidator : AbstractValidator<CreateCommentRequest>
+public sealed class CreateCommentRequestValidator : AbstractValidator<CreateCommentRequest>
 {
-    public CommentCreateDtoValidator()
+    public CreateCommentRequestValidator()
     {
         RuleFor(x => x.UserName)
             .NotEmpty().WithMessage("UserName is required")
@@ -30,6 +30,13 @@ public sealed class CommentCreateDtoValidator : AbstractValidator<CreateCommentR
         RuleFor(x => x.FilePath)
             .Must(IsSafeRelativePath)
             .WithMessage("FilePath must be safe relative path.");
+        
+        RuleFor(x => x.CaptchaId)
+            .NotEmpty().WithMessage("CaptchaId is required");
+
+        RuleFor(x => x.CaptchaCode)
+            .NotEmpty().WithMessage("CaptchaCode is required")
+            .Matches("^[A-Za-z0-9]{4,}$").WithMessage("CaptchaCode must contain only letters and digits");
     }
 
     private static bool IsSafeRelativePath(string? path)

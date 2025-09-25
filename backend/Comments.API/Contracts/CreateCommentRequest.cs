@@ -6,5 +6,7 @@ public record CreateCommentRequest(
     string Email,
     string Text,
     string? HomePage,
-    string? FilePath
+    string? FilePath,
+    string CaptchaId,
+    string CaptchaCode
 );

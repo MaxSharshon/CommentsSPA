@@ -16,12 +16,19 @@ builder.Services.AddAutoMapper(cfg =>
 });
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<CommentCreateDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCommentRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GetPagedCommentsRequestValidator>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
+
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
