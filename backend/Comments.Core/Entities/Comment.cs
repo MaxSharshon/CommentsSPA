@@ -1,6 +1,6 @@
 ﻿namespace Comments.Core.Entities;
 
-public partial class Comment
+public class Comment
 {
     public Guid Id { get; set; }
 
@@ -41,28 +41,34 @@ public partial class Comment
             throw new ArgumentException("Text is required.", nameof(text));
 
         if (userName.Length > CommentConstraints.MAX_USERNAME_LENGTH)
-            throw new ArgumentException($"Max length of UserName — {CommentConstraints.MAX_USERNAME_LENGTH}.", nameof(userName));
+            throw new ArgumentException($"Max length of UserName — {CommentConstraints.MAX_USERNAME_LENGTH}.",
+                nameof(userName));
         if (email.Length > CommentConstraints.MAX_EMAIL_LENGTH)
             throw new ArgumentException($"Max length of Email — {CommentConstraints.MAX_EMAIL_LENGTH}.", nameof(email));
         if (homePage is { Length: > CommentConstraints.MAX_HOME_PAGE_LENGTH })
-            throw new ArgumentException($"Max length of HomePage — {CommentConstraints.MAX_HOME_PAGE_LENGTH}.", nameof(homePage));
+            throw new ArgumentException($"Max length of HomePage — {CommentConstraints.MAX_HOME_PAGE_LENGTH}.",
+                nameof(homePage));
         if (text is { Length: > CommentConstraints.MAX_TEXT_LENGTH })
             throw new ArgumentException($"Max length of Text — {CommentConstraints.MAX_TEXT_LENGTH}.", nameof(text));
 
         if (!CommentRegex.UserName().IsMatch(userName))
             throw new ArgumentException("Only latin letters and digits are allowed.", nameof(userName));
 
-        try { _ = new System.Net.Mail.MailAddress(email); }
-        catch { throw new ArgumentException("Invalid email format.", nameof(email)); }
+        try
+        {
+            _ = new System.Net.Mail.MailAddress(email);
+        }
+        catch
+        {
+            throw new ArgumentException("Invalid email format.", nameof(email));
+        }
 
         if (homePage is not null && !Uri.IsWellFormedUriString(homePage, UriKind.Absolute))
             throw new ArgumentException("HomePage must be a valid URL", nameof(homePage));
 
         if (filePath is not null)
-        {
-            if (System.IO.Path.IsPathRooted(filePath) || filePath.Replace('\\', '/').Contains(".."))
+            if (Path.IsPathRooted(filePath) || filePath.Replace('\\', '/').Contains(".."))
                 throw new ArgumentException("FilePath must be safe relative path.", nameof(filePath));
-        }
 
         return new Comment
         {

@@ -1,6 +1,6 @@
 ﻿namespace Comments.API.Contracts;
 
-public record GetTopCommentsRequest
+public record GetPagedCommentsRequest
 {
     public int Page { get; init; } = 1;
     

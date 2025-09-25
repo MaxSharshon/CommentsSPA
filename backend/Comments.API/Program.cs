@@ -17,7 +17,7 @@ builder.Services.AddAutoMapper(cfg =>
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CommentCreateDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<GetTopCommentsRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GetPagedCommentsRequestValidator>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

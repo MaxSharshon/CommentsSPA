@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Comments.API.Validators;
 
-public class GetTopCommentsRequestValidator : AbstractValidator<GetTopCommentsRequest>
+public class GetPagedCommentsRequestValidator : AbstractValidator<GetPagedCommentsRequest>
 {
-    public GetTopCommentsRequestValidator()
+    public GetPagedCommentsRequestValidator()
     {
         RuleFor(r=>r.Page)
             .GreaterThanOrEqualTo(1);

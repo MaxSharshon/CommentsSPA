@@ -46,20 +46,35 @@ public class CommentsController(CommentsContext context, IMapper mapper) : Contr
     }
 
     [HttpGet("top")]
-    public async Task<IActionResult> GetTopAsync(
-        [FromQuery] GetTopCommentsRequest request,
+    public Task<IActionResult> GetCommentsAsync([FromQuery] GetPagedCommentsRequest request, CancellationToken ct = default)
+    {
+        return GetPagedAsync(request, null, ct);
+    }
+    
+    [HttpGet("{id:guid}/replies")]
+    public async Task<IActionResult> GetRepliesAsync(
+        Guid id,
+        [FromQuery] GetPagedCommentsRequest request,
         CancellationToken ct = default)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
+        
+        if(!await context.Comments.AsNoTracking().AnyAsync(c => c.Id == id, ct))
+            return NotFound();
 
+        return await GetPagedAsync(request, id, ct);
+    }
+    
+    private async Task<IActionResult> GetPagedAsync(
+        [FromQuery] GetPagedCommentsRequest request,
+        Guid? parentId,
+        CancellationToken ct = default)
+    {
         var sortBy = request.SortBy ?? CommentSortFields.CREATED_AT;
         var order = request.Order ?? OrderFields.DESC;
 
-        var query = context.Comments
-            .AsNoTracking()
-            .Where(x => x.ParentId == null);
-
+        var query = context.Comments.AsNoTracking().Where(c => c.ParentId == parentId);
         query = ApplyCommentSorting(query, order, sortBy);
 
         var totalItems = await query.LongCountAsync(ct);
@@ -71,9 +86,7 @@ public class CommentsController(CommentsContext context, IMapper mapper) : Contr
             .ToListAsync(ct);
 
         var items = comments.Select(mapper.Map<GetCommentResponse>).ToList();
-
-        var result = new PagedCommentsResponse(items, request.Page, PAGE_SIZE, totalItems, totalPages);
-        return Ok(result);
+        return Ok(new PagedCommentsResponse(items, request.Page, PAGE_SIZE, totalItems, totalPages));
     }
 
     private static IQueryable<Comment> ApplyCommentSorting(IQueryable<Comment> query, string order, string sortBy)
