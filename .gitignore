@@ -488,6 +488,15 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+# Env files
+.env
+.env.*
+*.env
+
+# Docker artifacts
+*.env.local
+docker-compose.override.yml
+
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
