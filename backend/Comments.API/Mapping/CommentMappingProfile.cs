@@ -15,7 +15,7 @@ public class CommentMappingProfile : Profile
                 Comment.Create(
                     src.UserName,
                     src.Email,
-                    src.Text,
+                    HtmlSanitizerUtil.Sanitize(src.Text),
                     src.ParentId,
                     src.HomePage,
                     src.FilePath,
