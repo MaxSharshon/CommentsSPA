@@ -8,7 +8,7 @@ public sealed class CreateCommentRequestValidator : AbstractValidator<CreateComm
 {
     public CreateCommentRequestValidator()
     {
-        RuleFor(x => x.UserName)
+        RuleFor(x => x.Username)
             .NotEmpty().WithMessage("UserName is required")
             .Matches("^[A-Za-z0-9]+$").WithMessage("Only latin letters and digits are allowed")
             .MaximumLength(CommentConstraints.MAX_USERNAME_LENGTH);
