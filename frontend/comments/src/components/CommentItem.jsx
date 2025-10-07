@@ -4,7 +4,7 @@ import moment from "moment";
 import {useState} from "react";
 import {fetchReplies} from "@/services/comments.js";
 
-const CommentItem = ({id, username, email, text, createdAt, level = 0}) => {
+const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, order}) => {
     const [showReplies, setShowReplies] = useState(false);
     const [loadingReplies, setLoadingReplies] = useState(false);
     const [replies, setReplies] = useState([]);
@@ -13,7 +13,7 @@ const CommentItem = ({id, username, email, text, createdAt, level = 0}) => {
     const toggleReplies = async () => {
         if (!showReplies && !loadingReplies) {
             setLoadingReplies(true);
-            const fetched = await fetchReplies(id);
+            const fetched = await fetchReplies(id, sortBy, order);
             setReplies(fetched);
             setRepliesLoaded(true);
             setLoadingReplies(false);
@@ -80,6 +80,8 @@ const CommentItem = ({id, username, email, text, createdAt, level = 0}) => {
                                     text={reply.text}
                                     createdAt={reply.createdAt}
                                     level={level + 1}
+                                    sortBy={sortBy}
+                                    order={order}
                                 />
                             ))}
                     </VStack>

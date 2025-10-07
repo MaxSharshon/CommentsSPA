@@ -1,6 +1,6 @@
-﻿export const fetchComments = async () => {
+﻿export const fetchComments = async (sortBy = "createdAt", order = "desc") => {
     try {
-        const response = await fetch(`/api/comments/top`);
+        const response = await fetch(`/api/comments/top?sortBy=${sortBy}&order=${order}`);
         if (!response.ok) {
             console.error("Failed to fetch comments");
             return [];
@@ -13,9 +13,9 @@
     }
 }
 
-export const fetchReplies = async (commentId) => {
+export const fetchReplies = async (commentId, sortBy = "createdAt", order = "desc") => {
     try {
-        const response = await fetch(`/api/comments/${commentId}/replies`);
+        const response = await fetch(`/api/comments/${commentId}/replies?sortBy=${sortBy}&order=${order}`);
         if (!response.ok) {
             console.error("Failed to fetch replies for comment: ", commentId);
             return [];
