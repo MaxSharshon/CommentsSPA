@@ -1,22 +1,27 @@
 import React, {useEffect, useState} from 'react'
-import {HStack, Select, VStack} from "@chakra-ui/react";
+import {VStack} from "@chakra-ui/react";
 import CommentItem from "@/components/CommentItem.jsx";
 import {fetchComments} from "@/services/comments.js";
 import SortPanel from "@/components/SortPanel.jsx";
+import Pagination from "@/components/Pagination.jsx";
 
 function App() {
     const [comments, setComments] = useState([]);
     const [sortBy, setSortBy] = useState("createdAt");
     const [order, setOrder] = useState("desc");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-    const loadComments = async () => {
-        let comments = await fetchComments(sortBy, order);
-        setComments(comments);
+    const loadComments = async (p = page) => {
+        let response = await fetchComments(sortBy, order, p);
+        setComments(response.items ?? []);
+        setTotalPages(response.totalPages ?? 1);
+        setPage(p);
     };
     
     useEffect(() => {
         loadComments();
-    }, [sortBy, order])
+    }, [page, sortBy, order])
 
     return (
         <VStack className="gap-4 w-full items-center p-4">
@@ -42,6 +47,12 @@ function App() {
                     </VStack>
                 );
             })}
+            
+            <Pagination 
+                currentPage={page} 
+                totalPages={totalPages} 
+                onPageChange={setPage}
+            />
         </VStack>
     )
 }

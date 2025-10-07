@@ -14,7 +14,7 @@ const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, o
         if (!showReplies && !loadingReplies) {
             setLoadingReplies(true);
             const fetched = await fetchReplies(id, sortBy, order);
-            setReplies(fetched);
+            setReplies(fetched.items ?? []);
             setRepliesLoaded(true);
             setLoadingReplies(false);
             setShowReplies(true);
@@ -27,7 +27,6 @@ const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, o
         <Box className="p-6 shadow-sm rounded-lg border border-gray-200 w-full"
              style={{marginLeft: level * 20}}>
             <VStack align="stretch" spacing={4}>
-                {/* Header */}
                 <HStack align="start" spacing={3}>
                     <Avatar size="sm" name={username}/>
                     <HStack justify="space-between" className="w-full">
@@ -48,7 +47,6 @@ const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, o
                     </HStack>
                 </HStack>
 
-                {/* Text */}
                 <Text className="text-sm text-gray-800 whitespace-pre-line text-left">
                     {text}
                 </Text>

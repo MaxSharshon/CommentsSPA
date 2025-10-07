@@ -1,29 +1,27 @@
-﻿export const fetchComments = async (sortBy = "createdAt", order = "desc") => {
+﻿export const fetchComments = async (sortBy = "createdAt", order = "desc", page = 1) => {
     try {
-        const response = await fetch(`/api/comments/top?sortBy=${sortBy}&order=${order}`);
+        const response = await fetch(`/api/comments/top?sortBy=${sortBy}&order=${order}&page=${page}`);
         if (!response.ok) {
             console.error("Failed to fetch comments");
-            return [];
+            return { items: [], page: 1, totalPages: 1 };
         }
-        const data = await response.json();
-        return data.items ?? [];
+        return await response.json();
     } catch (error) {
         console.error("fetchComments error: ", error);
-        return [];
+        return { items: [], page: 1, totalPages: 1 };
     }
 }
 
-export const fetchReplies = async (commentId, sortBy = "createdAt", order = "desc") => {
+export const fetchReplies = async (commentId, sortBy = "createdAt", order = "desc", page = 1) => {
     try {
-        const response = await fetch(`/api/comments/${commentId}/replies?sortBy=${sortBy}&order=${order}`);
+        const response = await fetch(`/api/comments/${commentId}/replies?sortBy=${sortBy}&order=${order}&page=${page}`);
         if (!response.ok) {
             console.error("Failed to fetch replies for comment: ", commentId);
-            return [];
+            return { items: [], page: 1, totalPages: 1 };
         }
-        const data = await response.json();
-        return data.items ?? [];
+        return await response.json();
     } catch (error) {
         console.error("fetchReplies error for comment: ", error);
-        return [];
+        return { items: [], page: 1, totalPages: 1 };
     }
 }
