@@ -2,7 +2,7 @@
 
 public record CreateCommentRequest(
     Guid? ParentId,
-    string UserName,
+    string Username,
     string Email,
     string Text,
     string? HomePage,

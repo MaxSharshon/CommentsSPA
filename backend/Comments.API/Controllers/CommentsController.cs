@@ -96,8 +96,8 @@ public class CommentsController(CommentsContext context, IMapper mapper, IMemory
         query = sortBy switch
         {
             CommentSortFields.USER_NAME => isDesc
-                ? query.OrderByDescending(c => c.UserName).ThenByDescending(c => c.CreatedAt)
-                : query.OrderBy(c => c.UserName).ThenBy(c => c.CreatedAt),
+                ? query.OrderByDescending(c => c.Username).ThenByDescending(c => c.CreatedAt)
+                : query.OrderBy(c => c.Username).ThenBy(c => c.CreatedAt),
             CommentSortFields.EMAIL => isDesc
                 ? query.OrderByDescending(c => c.Email).ThenByDescending(c => c.CreatedAt)
                 : query.OrderBy(c => c.Email).ThenBy(c => c.CreatedAt),

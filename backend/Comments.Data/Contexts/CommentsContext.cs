@@ -13,7 +13,7 @@ public class CommentsContext(DbContextOptions<CommentsContext> options) : DbCont
         {
             b.HasKey(c => c.Id);
             b.Property(c => c.Text).HasMaxLength(CommentConstraints.MAX_TEXT_LENGTH).IsRequired();
-            b.Property(c => c.UserName).HasMaxLength(CommentConstraints.MAX_USERNAME_LENGTH).IsRequired();
+            b.Property(c => c.Username).HasMaxLength(CommentConstraints.MAX_USERNAME_LENGTH).IsRequired();
             b.Property(c => c.Email).HasMaxLength(CommentConstraints.MAX_EMAIL_LENGTH).IsRequired();
             b.Property(c => c.HomePage).HasMaxLength(CommentConstraints.MAX_HOME_PAGE_LENGTH);
             b.Property(c => c.CreatedAt).HasDefaultValueSql("GETUTCDATE()");

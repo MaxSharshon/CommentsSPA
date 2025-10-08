@@ -13,7 +13,7 @@ public class CommentMappingProfile : Profile
         CreateMap<CreateCommentRequest, Comment>()
             .ConstructUsing(src =>
                 Comment.Create(
-                    src.UserName,
+                    src.Username,
                     src.Email,
                     HtmlSanitizerUtil.Sanitize(src.Text),
                     src.ParentId,

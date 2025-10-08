@@ -3,7 +3,7 @@
 public record GetCommentResponse(
     Guid Id,
     Guid? ParentId,
-    string UserName,
+    string Username,
     string Email,
     string Text,
     string? HomePage,

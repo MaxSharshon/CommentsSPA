@@ -8,7 +8,7 @@ public class Comment
     public Comment? Parent { get; set; }
     public ICollection<Comment> Replies { get; } = new List<Comment>();
 
-    public required string UserName { get; init; }
+    public required string Username { get; init; }
     public required string Email { get; init; }
     public string? HomePage { get; init; }
 
@@ -19,7 +19,7 @@ public class Comment
     public string? FilePath { get; init; }
 
     public static Comment Create(
-        string userName,
+        string username,
         string email,
         string text,
         Guid? parentId = null,
@@ -27,22 +27,22 @@ public class Comment
         string? filePath = null,
         DateTime? createdAtUtc = null)
     {
-        userName = (userName ?? string.Empty).Trim();
+        username = (username ?? string.Empty).Trim();
         email = (email ?? string.Empty).Trim().ToLowerInvariant();
         text = (text ?? string.Empty).Trim();
         homePage = string.IsNullOrWhiteSpace(homePage) ? null : homePage.Trim();
         filePath = string.IsNullOrWhiteSpace(filePath) ? null : filePath.Trim();
 
-        if (string.IsNullOrWhiteSpace(userName))
-            throw new ArgumentException("UserName is required.", nameof(userName));
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ArgumentException("UserName is required.", nameof(username));
         if (string.IsNullOrWhiteSpace(email))
             throw new ArgumentException("Email is required.", nameof(email));
         if (string.IsNullOrWhiteSpace(text))
             throw new ArgumentException("Text is required.", nameof(text));
 
-        if (userName.Length > CommentConstraints.MAX_USERNAME_LENGTH)
+        if (username.Length > CommentConstraints.MAX_USERNAME_LENGTH)
             throw new ArgumentException($"Max length of UserName — {CommentConstraints.MAX_USERNAME_LENGTH}.",
-                nameof(userName));
+                nameof(username));
         if (email.Length > CommentConstraints.MAX_EMAIL_LENGTH)
             throw new ArgumentException($"Max length of Email — {CommentConstraints.MAX_EMAIL_LENGTH}.", nameof(email));
         if (homePage is { Length: > CommentConstraints.MAX_HOME_PAGE_LENGTH })
@@ -51,8 +51,8 @@ public class Comment
         if (text is { Length: > CommentConstraints.MAX_TEXT_LENGTH })
             throw new ArgumentException($"Max length of Text — {CommentConstraints.MAX_TEXT_LENGTH}.", nameof(text));
 
-        if (!CommentRegex.UserName().IsMatch(userName))
-            throw new ArgumentException("Only latin letters and digits are allowed.", nameof(userName));
+        if (!CommentRegex.UserName().IsMatch(username))
+            throw new ArgumentException("Only latin letters and digits are allowed.", nameof(username));
 
         try
         {
@@ -73,7 +73,7 @@ public class Comment
         return new Comment
         {
             ParentId = parentId,
-            UserName = userName,
+            Username = username,
             Email = email,
             HomePage = homePage,
             Text = text,
