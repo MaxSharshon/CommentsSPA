@@ -1,14 +1,17 @@
 ﻿import {Avatar, Box, HStack, IconButton, VStack, Text, Button, Collapse, Spinner} from "@chakra-ui/react";
-import {ChatIcon, ChevronDownIcon, ChevronRightIcon} from "@chakra-ui/icons";
+import {ChatIcon, ChevronDownIcon, ChevronRightIcon, useDisclosure} from "@chakra-ui/icons";
 import moment from "moment";
 import {useState} from "react";
 import {fetchReplies} from "@/services/comments.js";
+import CommentFormModal from "@/components/CommentFormModal.jsx";
+import DOMPurify from "dompurify";
 
-const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, order}) => {
+const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, order, loadComments, page}) => {
     const [showReplies, setShowReplies] = useState(false);
     const [loadingReplies, setLoadingReplies] = useState(false);
     const [replies, setReplies] = useState([]);
     const [repliesLoaded, setRepliesLoaded] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const toggleReplies = async () => {
         if (!showReplies && !loadingReplies) {
@@ -43,13 +46,18 @@ const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, o
                             icon={<ChatIcon/>}
                             size="sm"
                             variant="ghost"
+                            onClick={onOpen}
                         />
                     </HStack>
                 </HStack>
 
-                <Text className="text-sm text-gray-800 whitespace-pre-line text-left">
-                    {text}
-                </Text>
+                <Box
+                    className="text-sm text-gray-800 whitespace-pre-line text-left"
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text, {
+                            ALLOWED_TAGS: ["a", "code", "i", "strong"],
+                            ALLOWED_ATTR: ["href", "title"]
+                        }) }}
+                />
 
                 <Button
                     onClick={toggleReplies}
@@ -80,8 +88,17 @@ const CommentItem = ({id, username, email, text, createdAt, level = 0, sortBy, o
                                     level={level + 1}
                                     sortBy={sortBy}
                                     order={order}
+                                    loadComments={loadComments}
+                                    page={page}
                                 />
                             ))}
+                        
+                        <CommentFormModal 
+                            isOpen={isOpen}
+                            onClose={onClose} 
+                            parentId={id}
+                            onSubmit={() => {loadComments(page)}}
+                        />
                     </VStack>
                 </Collapse>
             </VStack>
