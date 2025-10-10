@@ -2,6 +2,7 @@
     Button,
     FormControl,
     FormLabel,
+    FormErrorMessage,
     HStack,
     Image,
     Input,
@@ -16,11 +17,11 @@
     VStack,
     Box
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
+import TagPanel from "@/components/TagPanel.jsx";
+import CaptchaField from "@/components/CaptchaField.jsx";
 
-const allowedTags = ["i", "strong", "code", "a"];
-
-const CommentFormModal = ({ isOpen, onClose, parentId = null, onSubmit }) => {
+const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
     const toast = useToast();
 
     const [form, setForm] = useState({
@@ -31,18 +32,23 @@ const CommentFormModal = ({ isOpen, onClose, parentId = null, onSubmit }) => {
         captchaId: "",
         captchaCode: ""
     });
+
+    const [errors, setErrors] = useState({});
     const [captchaImage, setCaptchaImage] = useState("");
     const [showPreview, setShowPreview] = useState(false);
-    
+
     useEffect(() => {
-        if (isOpen) fetchCaptcha();
+        if (isOpen) {
+            setErrors({});
+            fetchCaptcha();
+        }
     }, [isOpen]);
 
     const fetchCaptcha = async () => {
         try {
             const response = await fetch("/api/captcha/generate");
             const data = await response.json();
-            setForm((f) => ({ ...f, captchaId: data.captchaId }));
+            setForm((f) => ({...f, captchaId: data.captchaId}));
             setCaptchaImage(data.captchaImage);
         } catch (error) {
             console.error("Error fetching captcha:", error);
@@ -50,47 +56,25 @@ const CommentFormModal = ({ isOpen, onClose, parentId = null, onSubmit }) => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setForm((prev) => ({...prev, [name]: value}));
+        setErrors((prev) => ({...prev, [name]: undefined}));
     };
-    
+
     const insertTag = (tag) => {
-        let snippet = "";
-        if (tag === "a") {
-            snippet = `<a href="" title=""></a>`;
-        } else {
-            snippet = `<${tag}></${tag}>`;
-        }
+        let snippet = tag === "a" ? `<a href="" title=""></a>` : `<${tag}></${tag}>`;
         setForm((prev) => ({...prev, text: prev.text + snippet}));
-    }
-    
-    const validateTags = (text) => {
-        const tagRegex = /<\/?([a-z]+)(\s+[^>]*)?>/gi;
-        let match;
-        while ((match = tagRegex.exec(text)) !== null) {
-            const tag = match[1].toLowerCase();
-            if (!allowedTags.includes(tag)) return false;
-        }
-        return true;
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (!validateTags(form.text)) {
-            toast({
-                title: "Invalid HTML tags",
-                description: "Only i, strong, code, and a tags are allowed.",
-                status: "error",
-                duration: 4000
-            });
-            return;
-        }
-        
+
+        if (!validateForm()) return;
+
         try {
             const response = await fetch("/api/comments", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     username: form.username,
                     email: form.email,
@@ -104,11 +88,22 @@ const CommentFormModal = ({ isOpen, onClose, parentId = null, onSubmit }) => {
 
             if (!response.ok) {
                 const errorData = await response.json();
+                let description = "An error occurred";
+
+                if (errorData.errors) {
+                    description = Object.entries(errorData.errors)
+                        .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+                        .join("\n");
+                } else if (errorData.title) {
+                    description = errorData.title;
+                }
+
                 toast({
-                    title: "Error",
-                    description: errorData.title || "Validation or CAPTCHA error",
+                    title: "Server validation failed",
+                    description,
                     status: "error",
-                    duration: 4000
+                    duration: 6000,
+                    isClosable: true,
                 });
                 return;
             }
@@ -116,95 +111,104 @@ const CommentFormModal = ({ isOpen, onClose, parentId = null, onSubmit }) => {
             toast({
                 title: "Comment submitted",
                 status: "success",
-                duration: 3000
+                duration: 3000,
+                isClosable: true,
             });
+
             onSubmit?.();
             onClose();
         } catch (error) {
             console.error("Error submitting comment:", error);
             toast({
-                title: "Error submitting comment",
+                title: "Network error",
+                description: "Could not submit comment. Please try again.",
                 status: "error",
-                duration: 3000
+                duration: 4000,
+                isClosable: true,
             });
         }
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg">
-            <ModalOverlay />
+            <ModalOverlay/>
             <ModalContent>
-                <ModalHeader>
+                <ModalHeader fontSize="xl">
                     {parentId ? "Reply to comment" : "New comment"}
                 </ModalHeader>
                 <form onSubmit={handleSubmit}>
                     <ModalBody>
                         <VStack spacing={4}>
-                            <FormControl isRequired>
+                            <FormControl isRequired isInvalid={!!errors.username}>
                                 <FormLabel>Username</FormLabel>
-                                <Input name="username" value={form.username} onChange={handleChange} />
+                                <Input
+                                    name="username"
+                                    value={form.username}
+                                    placeholder="Enter your username"
+                                    onChange={handleChange}
+                                />
+                                <FormErrorMessage>{errors.username}</FormErrorMessage>
                             </FormControl>
 
-                            <FormControl isRequired>
+                            <FormControl isRequired isInvalid={!!errors.email}>
                                 <FormLabel>Email</FormLabel>
-                                <Input name="email" value={form.email} onChange={handleChange} />
+                                <Input
+                                    name="email"
+                                    value={form.email}
+                                    placeholder="example@mail.com"
+                                    onChange={handleChange}
+                                />
+                                <FormErrorMessage>{errors.email}</FormErrorMessage>
                             </FormControl>
 
                             <FormControl>
                                 <FormLabel>Homepage</FormLabel>
-                                <Input name="homepage" value={form.homepage} onChange={handleChange} />
+                                <Input
+                                    name="homepage"
+                                    value={form.homepage}
+                                    placeholder="https://example.com"
+                                    onChange={handleChange}
+                                />
                             </FormControl>
 
-                            <HStack spacing={2}>
-                                {["i", "strong", "code", "a"].map((tag) => (
-                                    <Button key={tag} size="xs" variant="outline" onClick={() => insertTag(tag)}>
-                                        {tag}
-                                    </Button>
-                                ))}
-                                <Button size="xs" onClick={() => setShowPreview((p) => !p)}>
-                                    {showPreview ? "Hide" : "Preview"}
-                                </Button>
-                            </HStack>
-                            
-                            <FormControl isRequired>
+                            <FormControl isRequired isInvalid={!!errors.text}>
                                 <FormLabel>Text</FormLabel>
-                                <Textarea name="text" value={form.text} onChange={handleChange} />
+
+                                <TagPanel
+                                    onInsertTag={insertTag}
+                                    onTogglePreview={() => setShowPreview((p) => !p)}
+                                    isPreview={showPreview}
+                                />
+
+                                <Textarea
+                                    name="text"
+                                    value={form.text}
+                                    onChange={handleChange}
+                                    placeholder="Enter your comment here..."
+                                />
+                                <FormErrorMessage>{errors.text}</FormErrorMessage>
                             </FormControl>
 
                             {showPreview && (
-                                <Box className="p-4 w-full border-2 border-gray-200 bg-gray-50 rounded-md"
-                                     dangerouslySetInnerHTML={{ __html: form.text }}
+                                <Box
+                                    className="p-4 w-full border-2 border-gray-200 bg-gray-50 rounded-md"
+                                    dangerouslySetInnerHTML={{__html: form.text}}
                                 />
                             )}
 
-                            {/* CAPTCHA */}
-                            <FormControl isRequired>
-                                <FormLabel>CAPTCHA</FormLabel>
-                                <HStack>
-                                    {captchaImage && (
-                                        <Image src={captchaImage} alt="Captcha" height="50" />
-                                    )}
-                                    <Button size="sm" onClick={fetchCaptcha}>
-                                        Refresh
-                                    </Button>
-                                </HStack>
-                                <Input
-                                    name="captchaCode"
-                                    value={form.captchaCode}
-                                    onChange={handleChange}
-                                    mt={2}
-                                />
-                            </FormControl>
+                            <CaptchaField
+                                captchaImage={captchaImage}
+                                onRefresh={fetchCaptcha}
+                                value={form.captchaCode}
+                                onChange={handleChange}
+                                error={errors.captchaCode}
+                            />
                         </VStack>
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button mr={3} onClick={onClose}>
-                            Cancel
-                        </Button>
-                        <Button colorScheme="purple" type="submit">
-                            Submit
-                        </Button>
+                        <Button mr={3} onClick={onClose}>Cancel</Button>
+                        <Button colorScheme="purple" type="submit">Submit</Button>
                     </ModalFooter>
                 </form>
             </ModalContent>

@@ -1,0 +1,1 @@
+const allowedTags = ["i", "strong", "code", "a"];
