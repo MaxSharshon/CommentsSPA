@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: ${API_CONNECTION}
       UseHttpsRedirection: "false"
     ports:
