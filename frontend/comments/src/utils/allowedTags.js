@@ -1,1 +1,1 @@
-const allowedTags = ["i", "strong", "code", "a"];
+export const allowedTags = ["i", "strong", "code", "a"];

@@ -1,3 +1,5 @@
+import { allowedTags } from "@/utils/allowedTags.js";
+
 const validateTags = (text) => {
         const tagRegex = /<\/?([a-z]+)(\s+[^>]*)?>/gi;
         let match;
