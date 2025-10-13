@@ -17,12 +17,14 @@
     VStack,
     Box
 } from "@chakra-ui/react";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import TagPanel from "@/components/TagPanel.jsx";
 import CaptchaField from "@/components/CaptchaField.jsx";
+import {insertTagAtCursor} from "@/utils/insertTagAtCursor.js";
 
 const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
     const toast = useToast();
+    const textareaRef = useRef(null);
 
     const [form, setForm] = useState({
         username: "",
@@ -61,9 +63,11 @@ const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
         setErrors((prev) => ({...prev, [name]: undefined}));
     };
 
-    const insertTag = (tag) => {
-        let snippet = tag === "a" ? `<a href="" title=""></a>` : `<${tag}></${tag}>`;
-        setForm((prev) => ({...prev, text: prev.text + snippet}));
+    const handleInsertTag = (tag) => {
+        if (textareaRef.current) {
+            const newText = insertTagAtCursor(textareaRef.current, tag);
+            setForm(prev => ({...prev, text: newText}));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -175,12 +179,13 @@ const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
                                 <FormLabel>Text</FormLabel>
 
                                 <TagPanel
-                                    onInsertTag={insertTag}
+                                    onInsertTag={handleInsertTag}
                                     onTogglePreview={() => setShowPreview((p) => !p)}
                                     isPreview={showPreview}
                                 />
 
                                 <Textarea
+                                    ref={textareaRef}
                                     name="text"
                                     value={form.text}
                                     onChange={handleChange}
