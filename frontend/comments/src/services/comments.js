@@ -25,3 +25,20 @@ export const fetchReplies = async (commentId, sortBy = "createdAt", order = "des
         return { items: [], page: 1, totalPages: 1 };
     }
 }
+
+export async function submitComment(commentData) {
+    const response = await fetch("/api/comments", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(commentData),
+    });
+    
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw  errorData.errors || new Error(`Failed to submit comment: ${response.statusText}`);
+    }
+    
+    return response.json();
+}

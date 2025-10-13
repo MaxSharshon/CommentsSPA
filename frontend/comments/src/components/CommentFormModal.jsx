@@ -3,8 +3,6 @@
     FormControl,
     FormLabel,
     FormErrorMessage,
-    HStack,
-    Image,
     Input,
     Modal,
     ModalBody,
@@ -21,6 +19,9 @@ import {useEffect, useRef, useState} from "react";
 import TagPanel from "@/components/TagPanel.jsx";
 import CaptchaField from "@/components/CaptchaField.jsx";
 import {insertTagAtCursor} from "@/utils/insertTagAtCursor.js";
+import {submitComment} from "@/services/comments.js";
+import {generateCaptcha} from "@/services/captcha.js";
+import {validateCommentForm} from "@/utils/validation.js"
 
 const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
     const toast = useToast();
@@ -48,8 +49,7 @@ const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
 
     const fetchCaptcha = async () => {
         try {
-            const response = await fetch("/api/captcha/generate");
-            const data = await response.json();
+            const data = await generateCaptcha();
             setForm((f) => ({...f, captchaId: data.captchaId}));
             setCaptchaImage(data.captchaImage);
         } catch (error) {
@@ -73,44 +73,18 @@ const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
+        if (!validateCommentForm(form)) return;
 
         try {
-            const response = await fetch("/api/comments", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    username: form.username,
-                    email: form.email,
-                    homepage: form.homepage,
-                    text: form.text,
-                    captchaId: form.captchaId,
-                    captchaCode: form.captchaCode,
-                    parentId: parentId
-                })
+            await submitComment({
+                username: form.username,
+                email: form.email,
+                homepage: form.homepage,
+                text: form.text,
+                captchaId: form.captchaId,
+                captchaCode: form.captchaCode,
+                parentId: parentId
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                let description = "An error occurred";
-
-                if (errorData.errors) {
-                    description = Object.entries(errorData.errors)
-                        .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
-                        .join("\n");
-                } else if (errorData.title) {
-                    description = errorData.title;
-                }
-
-                toast({
-                    title: "Server validation failed",
-                    description,
-                    status: "error",
-                    duration: 6000,
-                    isClosable: true,
-                });
-                return;
-            }
 
             toast({
                 title: "Comment submitted",
@@ -121,11 +95,21 @@ const CommentFormModal = ({isOpen, onClose, parentId = null, onSubmit}) => {
 
             onSubmit?.();
             onClose();
-        } catch (error) {
-            console.error("Error submitting comment:", error);
+        } catch (errorData) {
+            console.error("Error submitting comment:", errorData);
+
+            let description = "An error occurred";
+            if (errorData.errors) {
+                description = Object.entries(errorData.errors)
+                    .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+                    .join("\n");
+            } else if (errorData.title) {
+                description = errorData.title;
+            }
+            
             toast({
                 title: "Network error",
-                description: "Could not submit comment. Please try again.",
+                description: description,
                 status: "error",
                 duration: 4000,
                 isClosable: true,
